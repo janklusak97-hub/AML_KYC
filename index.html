@@ -1,1569 +1,711 @@
 <!DOCTYPE html>
-
 <html lang="cs">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AML Průvodce pro Advokátní Praxi (2025)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <meta charset="UTF-8" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>AML Průvodce pro Advokátní Praxi (Metodika 2025)</title>
-
-
-
-    <!-- Performance: preconnect fonts -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-
-
-    <!-- Font: Noto Sans for professional readability -->
-
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
-
-
-    <!-- Tailwind CSS (CDN). Using defer so it doesn't block parsing. -->
-
-    <script src="https://cdn.tailwindcss.com" defer></script>
-
-
-
-    <!-- Chart.js - deferred so it loads before DOMContentLoaded handlers run. -->
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-
-
+    <!-- Font: Noto Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-
         body {
-
             font-family: 'Noto Sans', sans-serif;
-
-            background-color: #f3f4f6;
-
-            color: #1f2937;
-
+            background-color: #f8fafc;
+            color: #334155;
         }
 
-
-
-        /* Custom Scrollbar */
-
-        ::-webkit-scrollbar {
-
-            width: 8px;
-
-        }
-
-        ::-webkit-scrollbar-track {
-
-            background: #f1f1f1;
-
-        }
-
-        ::-webkit-scrollbar-thumb {
-
-            background: #cbd5e1;
-
-            border-radius: 4px;
-
-        }
-
-
-
-        /* Chart Container Styling - MANDATORY */
-
+        /* Chart Container */
         .chart-container {
-
             position: relative;
-
             width: 100%;
-
             max-width: 800px;
-
-            height: 350px;
-
-            max-height: 400px;
-
-            margin-left: auto;
-
-            margin-right: auto;
-
+            height: 300px;
+            margin: 0 auto;
         }
 
-
-
-        @media (max-width: 640px) {
-
-            .chart-container {
-
-                height: 250px;
-
-            }
-
-        }
-
-
-
-        /* Card Hover Effects */
-
-        .hover-card {
-
+        /* Navigation Tabs */
+        .nav-btn {
+            border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
-
         }
-
-        .hover-card:hover {
-
-            transform: translateY(-2px);
-
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-        }
-
-
-
-        /* Custom Active Tab State */
-
-        .tab-active {
-
-            border-bottom: 3px solid #1e3a8a; /* Blue-900 */
-
-            color: #1e3a8a;
-
+        .nav-btn.active {
+            border-bottom-color: #0f172a; /* Slate 900 */
+            color: #0f172a;
             font-weight: 700;
-
         }
-
-        .tab-inactive {
-
-            color: #6b7280;
-
+        .nav-btn.inactive {
+            color: #64748b;
             font-weight: 500;
-
+        }
+        .nav-btn.inactive:hover {
+            color: #334155;
+            border-bottom-color: #cbd5e1;
         }
 
-        .tab-inactive:hover {
-
-            color: #374151;
-
+        /* Scenarios Accordion */
+        .scenario-card {
+            transition: all 0.2s;
+        }
+        .scenario-card:hover {
+            transform: translateX(4px);
         }
 
-
-
-        /* Animation */
-
-        @keyframes fadeIn {
-
+        /* Animations */
+        @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
-
             to { opacity: 1; transform: translateY(0); }
-
         }
-
-        .animate-fade-in {
-
-            animation: fadeIn 0.4s ease-out forwards;
-
+        .animate-slide {
+            animation: slideIn 0.4s ease-out forwards;
         }
-
-
-
-        /* Focus-visible for keyboard users */
-
-        :focus {
-
-            outline: 3px solid rgba(59,130,246,0.25);
-
-            outline-offset: 2px;
-
-        }
-
-
-
-        /* Clickable scenario header styling */
-
-        .scenario-toggle {
-
-            cursor: pointer;
-
-        }
-
     </style>
 
-
-
-    <!-- NOTE: For production, prefer setting a strict Content-Security-Policy on the HTTP response (headers).
-
-         If using a meta CSP, tailor it to allow the CDNs you require. Example (adjust before use):
-
-         <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https:;">
-
+    <!-- Application Structure Plan:
+         1. Header: Professional context.
+         2. Navigation: Standard legal terms.
+         3. Content: 
+            - Overview: Basic legal framework.
+            - Limits: Visual chart of thresholds.
+            - Client Analysis: The core interactive tool.
+            - Scenarios: 6 distinct cases covering varied legal areas.
     -->
-
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 </head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
 
-<body class="bg-gray-50 min-h-screen flex flex-col">
-
-
-
-    <!-- Header Section -->
-
-    <header class="bg-slate-900 text-white shadow-lg" role="banner">
-
-        <div class="container mx-auto px-4 py-6">
-
-            <div class="flex flex-col md:flex-row justify-between items-center">
-
-                <div>
-
-                    <h1 class="text-2xl md:text-3xl font-bold tracking-tight">⚖️ AML Školení pro Advokáty</h1>
-
-                    <p class="text-slate-300 text-sm mt-1">Interaktivní průvodce dle metodiky ČAK 2025 a zákona č. 253/2008 Sb.</p>
-
-                </div>
-
-                <div class="mt-4 md:mt-0 text-right hidden md:block">
-
-                    <div class="inline-block bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider mb-1">Metodika 2025</div>
-
-                    <div class="text-slate-400 text-xs">Aktualizováno pro sledované činnosti</div>
-
-                </div>
-
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="container mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">⚖️ AML Compliance pro Advokáty</h1>
+                <p class="text-slate-400 text-sm mt-1">Interaktivní nástroj pro aplikaci zákona č. 253/2008 Sb. a předpisů ČAK</p>
             </div>
-
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <span class="px-3 py-1 bg-amber-600 rounded text-xs font-bold uppercase tracking-wider">Metodika 2025</span>
+            </div>
         </div>
-
     </header>
 
-
-
     <!-- Navigation -->
-
-    <nav class="bg-white shadow sticky top-0 z-50" role="navigation" aria-label="Hlavní navigace">
-
+    <nav class="bg-white sticky top-0 z-40 shadow-sm border-b border-slate-200">
         <div class="container mx-auto px-4">
-
-            <div class="flex space-x-1 md:space-x-8 overflow-x-auto pb-1" id="nav-container" role="tablist" aria-label="Sekce aplikace">
-
-                <button onclick="switchTab('tab-prehled')" id="btn-tab-prehled" class="tab-active py-4 px-2 whitespace-nowrap focus:outline-none transition-colors" role="tab" aria-controls="tab-prehled" aria-selected="true">
-
-                    Sledované Činnosti
-
+            <div class="flex overflow-x-auto pb-1 gap-6" id="nav-container">
+                <button onclick="switchTab('tab-prehled')" id="btn-tab-prehled" class="nav-btn active py-4 px-1 whitespace-nowrap">
+                    Přehled Povinností
                 </button>
-
-                <button onclick="switchTab('tab-limity')" id="btn-tab-limity" class="tab-inactive py-4 px-2 whitespace-nowrap focus:outline-none transition-colors" role="tab" aria-controls="tab-limity" aria-selected="false">
-
+                <button onclick="switchTab('tab-limity')" id="btn-tab-limity" class="nav-btn inactive py-4 px-1 whitespace-nowrap">
                     Finanční Limity
-
                 </button>
-
-                <button onclick="switchTab('tab-wizard')" id="btn-tab-wizard" class="tab-inactive py-4 px-2 whitespace-nowrap focus:outline-none transition-colors" role="tab" aria-controls="tab-wizard" aria-selected="false">
-
-                    ⚡ Analýza Klienta (Wizard)
-
+                <button onclick="switchTab('tab-analyza')" id="btn-tab-analyza" class="nav-btn inactive py-4 px-1 whitespace-nowrap flex items-center gap-2">
+                    <span>⚡</span> Analýza Klienta
                 </button>
-
-                <button onclick="switchTab('tab-rizika')" id="btn-tab-rizika" class="tab-inactive py-4 px-2 whitespace-nowrap focus:outline-none transition-colors" role="tab" aria-controls="tab-rizika" aria-selected="false">
-
-                    Rizikové Faktory
-
-                </button>
-
-                <button onclick="switchTab('tab-situace')" id="btn-tab-situace" class="tab-inactive py-4 px-2 whitespace-nowrap focus:outline-none transition-colors" role="tab" aria-controls="tab-situace" aria-selected="false">
-
+                <button onclick="switchTab('tab-situace')" id="btn-tab-situace" class="nav-btn inactive py-4 px-1 whitespace-nowrap">
                     Modelové Situace
-
                 </button>
-
             </div>
-
         </div>
-
     </nav>
 
-
-
-    <!-- Main Content Area -->
-
-    <main class="flex-grow container mx-auto px-4 py-8" role="main">
-
-
-
-        <!-- TAB 1: Přehled / Sledované Činnosti -->
-
-        <section id="tab-prehled" class="space-y-8 animate-fade-in" tabindex="-1">
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-
-                <h2 class="text-2xl font-bold text-slate-800 mb-4">Kdy se advokát stává povinnou osobou?</h2>
-
-                <div class="p-4 bg-blue-50 border-l-4 border-blue-600 rounded mb-6">
-
-                    <p class="text-blue-900 text-sm">
-
-                        <strong>Klíčový princip:</strong> Advokát není povinnou osobou AML při poskytování veškerých služeb. Povinnosti (Identifikace a Kontrola) dopadají pouze na tzv. 
-
-                        <strong>SLEDOVANÉ ČINNOSTI</strong> (§ 2 odst. 1 písm. g) AML zákona).
-
-                    </p>
-
-                </div>
-
-
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    <!-- Sledované Činnosti -->
-
-                    <div class="border rounded-xl p-5 bg-white hover:shadow-md transition relative overflow-hidden" aria-hidden="false">
-
-                        <div class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl">AML PLATÍ</div>
-
-                        <h3 class="font-bold text-lg mb-3">✅ Sledované činnosti</h3>
-
-                        <ul class="list-disc list-inside space-y-2 text-slate-700 text-sm">
-
-                            <li><strong>Advokátní úschova</strong> peněz, cenných papírů nebo jiného majetku.</li>
-
-                            <li>Nákup nebo prodej <strong>nemovitosti</strong> či podniku.</li>
-
-                            <li>Správa majetku klienta (svěřenské fondy).</li>
-
-                            <li>Zakládání, řízení nebo provozování obchodních společností.</li>
-
-                            <li>Poskytování sídla (pokud je to hlavní služba).</li>
-
-                        </ul>
-
-                    </div>
-
-
-
-                    <!-- Nesledované Činnosti -->
-
-                    <div class="border rounded-xl p-5 bg-white hover:shadow-md transition relative overflow-hidden" aria-hidden="false">
-
-                        <div class="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-bl">AML NEPLATÍ</div>
-
-                        <h3 class="font-bold text-lg mb-3">🛡️ Vyňaté činnosti (Mlčenlivost)</h3>
-
-                        <ul class="list-disc list-inside space-y-2 text-slate-700 text-sm">
-
-                            <li><strong>Obhajoba</strong> v trestním řízení (absolutní výjimka).</li>
-
-                            <li>Zastupování v řízení před soudy (spory).</li>
-
-                            <li>Právní poradenství týkající se <strong>určení právního postavení</strong> klienta.</li>
-
-                            <li>Běžné sepisování smluv bez manipulace s prostředky (pokud nejde o převod nemovitosti/obch. podílu).</li>
-
-                        </ul>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Process Steps -->
-
-                <div class="mt-8">
-
-                    <h3 class="font-bold text-slate-800 mb-4">Procesní postup u sledovaných činností</h3>
-
-                    <div class="flex flex-col md:flex-row justify-between text-sm text-center gap-2">
-
-                        <div class="bg-gray-100 p-3 rounded flex-1">1. Přijetí pokynu</div>
-
-                        <div class="hidden md:block text-gray-400 self-center">➜</div>
-
-                        <div class="bg-blue-100 text-blue-800 font-semibold p-3 rounded flex-1">2. Posouzení (Je to sledovaná činnost?)</div>
-
-                        <div class="hidden md:block text-gray-400 self-center">➜</div>
-
-                        <div class="bg-indigo-100 text-indigo-800 font-semibold p-3 rounded flex-1">3. Identifikace (Kdo je klient?)</div>
-
-                        <div class="hidden md:block text-gray-400 self-center">➜</div>
-
-                        <div class="bg-purple-100 text-purple-800 font-semibold p-3 rounded flex-1">4. Kontrola (Původ peněz, Sankce)</div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- TAB 2: Finanční Limity -->
-
-        <section id="tab-limity" class="hidden space-y-8 animate-fade-in" tabindex="-1">
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-
-                <h2 class="text-2xl font-bold text-slate-800 mb-2">Finanční prahy pro rok 2025</h2>
-
-                <p class="text-slate-600 mb-6">
-
-                    Graf znázorňuje limity aktivující povinnosti u <strong>sledovaných činností</strong>. U úschovy peněz je nutné provést identifikaci <strong>vždy</strong>, bez ohledu na limit.
-
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- SECTION 1: Přehled -->
+        <section id="tab-prehled" class="animate-slide space-y-6">
+            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Základní principy: Kdy se aplikuje AML?</h2>
+                <p class="text-slate-600 mb-6 text-lg">
+                    Advokátní praxe je specifická tím, že se povinnosti AML zákona nevztahují na veškerou činnost, ale pouze na zákonem vymezené <strong>sledované činnosti</strong>. V ostatních případech má přednost zákonná povinnost mlčenlivosti.
                 </p>
 
-
-
-                <div class="flex flex-col items-center">
-
-                    <div class="chart-container" aria-hidden="false">
-
-                        <canvas id="limitsChart" role="img" aria-label="Graf finančních limitů"></canvas>
-
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                    <!-- Sledované činnosti -->
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">!</div>
+                            <h3 class="font-bold text-blue-900 text-lg">Sledované činnosti (AML platí)</h3>
+                        </div>
+                        <ul class="space-y-3 text-slate-700">
+                            <li class="flex gap-2"><span class="text-blue-500">✓</span> Úschova peněz, cenných papírů či jiného majetku.</li>
+                            <li class="flex gap-2"><span class="text-blue-500">✓</span> Nákup nebo prodej nemovitosti či podniku.</li>
+                            <li class="flex gap-2"><span class="text-blue-500">✓</span> Správa majetku klienta (vč. svěřenských fondů).</li>
+                            <li class="flex gap-2"><span class="text-blue-500">✓</span> Zakládání a řízení obchodních korporací.</li>
+                        </ul>
                     </div>
 
+                    <!-- Výjimky -->
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-100">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">🛡️</div>
+                            <h3 class="font-bold text-green-900 text-lg">Výjimky (Mlčenlivost platí)</h3>
+                        </div>
+                        <ul class="space-y-3 text-slate-700">
+                            <li class="flex gap-2"><span class="text-green-500">✓</span> <strong>Obhajoba</strong> v trestním řízení (Absolutní výjimka).</li>
+                            <li class="flex gap-2"><span class="text-green-500">✓</span> Zastupování v soudním řízení.</li>
+                            <li class="flex gap-2"><span class="text-green-500">✓</span> Právní poradenství ohledně právního postavení.</li>
+                            <li class="flex gap-2"><span class="text-green-500">✓</span> Sepis smluv bez manipulace s prostředky (mimo nemovitosti).</li>
+                        </ul>
+                    </div>
                 </div>
-
-
-
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-
-                    <div class="p-4 bg-gray-50 rounded-lg">
-
-                        <div class="text-2xl font-bold text-indigo-600">1 000 EUR</div>
-
-                        <div class="text-sm font-semibold text-slate-700">Příležitostný obchod</div>
-
-                        <div class="text-xs text-slate-500 mt-1">Identifikace nutná nad tento limit (pokud nejde o úschovu, tam vždy).</div>
-
-                    </div>
-
-                    <div class="p-4 bg-gray-50 rounded-lg">
-
-                        <div class="text-2xl font-bold text-indigo-600">15 000 EUR</div>
-
-                        <div class="text-sm font-semibold text-slate-700">Povinná Kontrola</div>
-
-                        <div class="text-xs text-slate-500 mt-1">Hranice pro hloubkovou kontrolu (zjišťování původu prostředků).</div>
-
-                    </div>
-
-                    <div class="p-4 bg-gray-50 rounded-lg">
-
-                        <div class="text-2xl font-bold text-red-600">270 000 CZK</div>
-
-                        <div class="text-sm font-semibold text-slate-700">Limit Hotovosti</div>
-
-                        <div class="text-xs text-slate-500 mt-1">Absolutní zákaz přijímat hotovost nad tuto částku.</div>
-
-                    </div>
-
-                </div>
-
             </div>
-
         </section>
 
-
-
-        <!-- TAB 3: Analýza Klienta (Interactive Wizard) -->
-
-        <section id="tab-wizard" class="hidden space-y-8 animate-fade-in" tabindex="-1">
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                <!-- Inputs Column -->
-
-                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
-
-                    <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">1. Parametry Služby</h2>
-
-
-
-                    <form id="amlWizardForm" onsubmit="event.preventDefault(); calculateObligations();" novalidate>
-
-                        <!-- Service Type (CRITICAL UPDATE) -->
-
-                        <div class="mb-5">
-
-                            <label for="serviceType" class="block text-sm font-bold text-slate-800 mb-2">Typ Právní Služby <span class="text-red-500">*</span></label>
-
-                            <select id="serviceType" name="serviceType" class="w-full p-3 border border-slate-300 rounded-lg bg-blue-50 focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" aria-required="true" aria-describedby="serviceTypeHelp">
-
-                                <optgroup label="Sledované činnosti (AML se vztahuje)">
-
-                                    <option value="uschova">Advokátní úschova (Peníze/Cenné papíry)</option>
-
-                                    <option value="nemovitost">Převod nemovitosti / Obchodního podílu</option>
-
-                                    <option value="korporace">Zakládání/Správa obchodní korporace</option>
-
-                                    <option value="majatek">Správa cizího majetku</option>
-
-                                </optgroup>
-
-                                <optgroup label="Nesledované činnosti (AML výjimky)">
-
-                                    <option value="obhajoba">Obhajoba v trestním řízení</option>
-
-                                    <option value="poradenstvi">Běžné právní poradenství / Zastupování v soudu</option>
-
-                                </optgroup>
-
-                            </select>
-
-                            <p id="serviceTypeHelp" class="text-xs text-slate-500 mt-1">Typ služby určuje, zda se vůbec aplikuje AML zákon.</p>
-
-                        </div>
-
-
-
-                        <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2 mt-8">2. Parametry Klienta</h2>
-
-
-
-                        <!-- Value Input -->
-
-                        <div class="mb-5">
-
-                            <label for="tradeValue" class="block text-sm font-semibold text-slate-700 mb-2">Hodnota obchodu (EUR)</label>
-
-                            <input type="number" id="tradeValue" name="tradeValue" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Např. 20000" min="0" step="0.01" inputmode="decimal" aria-describedby="tradeValueHelp tradeValueError" />
-
-                            <p id="tradeValueHelp" class="text-xs text-slate-500 mt-1">Zadejte částku v eurech. Nelze zadat záporné hodnoty.</p>
-
-                            <p id="tradeValueError" class="text-xs text-red-600 mt-1" role="alert" aria-live="polite" style="display:none;"></p>
-
-                        </div>
-
-
-
-                        <!-- Client Type -->
-
-                        <div class="mb-5">
-
-                            <label for="clientType" class="block text-sm font-semibold text-slate-700 mb-2">Typ Klienta</label>
-
-                            <select id="clientType" name="clientType" class="w-full p-3 border border-slate-300 rounded-lg bg-white">
-
-                                <option value="fyzicka">Fyzická osoba (Občan)</option>
-
-                                <option value="pravnicka">Právnická osoba (Firma)</option>
-
-                                <option value="sverensky">Svěřenský fond / Trust</option>
-
-                            </select>
-
-                        </div>
-
-
-
-                        <!-- Risk Toggles -->
-
-                        <fieldset class="space-y-3 mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
-
-                            <legend class="sr-only">Rizikové faktory</legend>
-
-                            <label class="flex items-center space-x-3 cursor-pointer">
-
-                                <input type="checkbox" id="isPEP" class="form-checkbox h-4 w-4 text-blue-600 rounded">
-
-                                <span class="text-sm text-slate-700">Klient je <strong>PEP</strong> (Politicky exponovaná osoba)</span>
-
-                            </label>
-
-                            <label class="flex items-center space-x-3 cursor-pointer">
-
-                                <input type="checkbox" id="isHighRiskCountry" class="form-checkbox h-4 w-4 text-blue-600 rounded">
-
-                                <span class="text-sm text-slate-700">Země původu je <strong>vysoce riziková</strong> / Sankce</span>
-
-                            </label>
-
-                            <label class="flex items-center space-x-3 cursor-pointer">
-
-                                <input type="checkbox" id="isNonFaceToFace" class="form-checkbox h-4 w-4 text-blue-600 rounded">
-
-                                <span class="text-sm text-slate-700">Klient není fyzicky přítomen</span>
-
-                            </label>
-
-                            <div class="border-t border-slate-200 my-2"></div>
-
-                            <label class="flex items-center space-x-3 cursor-pointer">
-
-                                <input type="checkbox" id="isSuspicious" class="form-checkbox h-4 w-4 text-red-500 rounded">
-
-                                <span class="text-sm text-red-700 font-bold">Podezření na nekalou činnost</span>
-
-                            </label>
-
-                        </fieldset>
-
-
-
-                        <button type="submit" id="evaluateBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow transition transform active:scale-95">
-
-                            Vyhodnotit Povinnosti
-
-                        </button>
-
-                    </form>
-
+        <!-- SECTION 2: Limity -->
+        <section id="tab-limity" class="hidden animate-slide space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Finanční Limity</h2>
+                        <p class="text-slate-500">Přehled prahových hodnot aktivujících povinnosti u sledovaných činností.</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container mb-8">
+                    <canvas id="limitsChart"></canvas>
                 </div>
 
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-slate-50 rounded-lg">
+                        <div class="text-lg font-bold text-red-600">0 EUR</div>
+                        <div class="text-xs text-slate-500 uppercase font-semibold">Advokátní Úschova</div>
+                        <p class="text-xs mt-1 text-slate-400">Identifikace vždy</p>
+                    </div>
+                    <div class="text-center p-4 bg-slate-50 rounded-lg">
+                        <div class="text-lg font-bold text-blue-600">1 000 EUR</div>
+                        <div class="text-xs text-slate-500 uppercase font-semibold">Příležitostný obchod</div>
+                        <p class="text-xs mt-1 text-slate-400">Nutná identifikace</p>
+                    </div>
+                    <div class="text-center p-4 bg-slate-50 rounded-lg">
+                        <div class="text-lg font-bold text-indigo-600">15 000 EUR</div>
+                        <div class="text-xs text-slate-500 uppercase font-semibold">Povinná Kontrola</div>
+                        <p class="text-xs mt-1 text-slate-400">Hloubková kontrola</p>
+                    </div>
+                    <div class="text-center p-4 bg-slate-50 rounded-lg">
+                        <div class="text-lg font-bold text-orange-600">270 000 CZK</div>
+                        <div class="text-xs text-slate-500 uppercase font-semibold">Limit Hotovosti</div>
+                        <p class="text-xs mt-1 text-slate-400">Zákaz přijetí</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-
-                <!-- Results Column -->
-
-                <div class="lg:col-span-2 space-y-6">
-
-                    <!-- Default State -->
-
-                    <div id="resultPlaceholder" class="h-full flex flex-col justify-center items-center text-slate-400 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 p-8">
-
-                        <div class="text-4xl mb-3">⚖️</div>
-
-                        <p>Zvolte typ služby a parametry pro analýzu povinností dle metodiky ČAK.</p>
-
+        <!-- SECTION 3: Analýza Klienta (Interactive) -->
+        <section id="tab-analyza" class="hidden animate-slide">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- INPUT FORM -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span class="bg-slate-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">1</span>
+                            Parametry Služby
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Typ Právní Služby</label>
+                                <select id="serviceType" onchange="toggleFormState()" class="w-full p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium">
+                                    <optgroup label="Sledované činnosti (AML)">
+                                        <option value="uschova">Advokátní úschova</option>
+                                        <option value="nemovitost">Převod nemovitosti / podílu</option>
+                                        <option value="korporace">Zakládání / správa firmy</option>
+                                        <option value="majatek">Správa majetku / Trust</option>
+                                    </optgroup>
+                                    <optgroup label="Nesledované činnosti (Výjimky)">
+                                        <option value="obhajoba">Obhajoba v trestním řízení</option>
+                                        <option value="poradenstvi">Běžné poradenství / Spory</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-
-
-                    <!-- Active Results (Hidden by default) -->
-
-                    <div id="resultPanel" class="hidden space-y-4" aria-live="polite">
-
-                        <!-- Main Status Banner -->
-
-                        <div id="statusBanner" class="p-4 rounded-lg border-l-8 shadow-sm flex items-start" role="status" aria-live="polite" aria-atomic="true">
-
-                            <!-- JS Populated -->
-
-                        </div>
-
-
-
-                        <!-- Exempt Info (Only shown if service is exempt) -->
-
-                        <div id="exemptInfo" class="hidden bg-green-50 p-6 rounded-lg border border-green-200">
-
-                            <h3 class="font-bold text-green-900 mb-2">Výjimka z AML povinností</h3>
-
-                            <p class="text-green-800 text-sm">
-
-                                U zvoleného typu právní služby (Obhajoba nebo Běžné poradenství bez správy majetku) se advokát nestává povinnou osobou ve smyslu zákona č. 253/2008 Sb.
-
-                                <br><br>
-
-                                <strong>Platí povinnost mlčenlivosti.</strong> Klienta není třeba lustrovat v sankčních seznamech ani zjišťovat původ majetku, pokud se povaha služby nezmění na sledovanou činnost.
-
-                            </p>
-
-                        </div>
-
-
-
-                        <!-- Obligations Grid (Shown only if NOT exempt) -->
-
-                        <div id="obligationsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                            <!-- Identifikace Card -->
-
-                            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative">
-
-                                <div class="absolute top-0 right-0 bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded-bl">Krok 1</div>
-
-                                <h3 class="font-bold text-slate-800 border-b pb-2 mb-3 flex justify-between items-center">
-
-                                    <span>Identifikace</span>
-
-                                    <span id="idStatusBadge" class="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-700">---</span>
-
-                                </h3>
-
-                                <ul id="idSteps" class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-
-                                    <!-- JS Populated -->
-
-                                </ul>
-
+                    <div id="clientFormSection" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition-opacity duration-300">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span class="bg-slate-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">2</span>
+                            Parametry Klienta & Rizika
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 mb-1">Hodnota obchodu (EUR)</label>
+                                <input type="number" id="tradeValue" class="w-full p-2.5 border border-slate-300 rounded-lg" placeholder="např. 20000">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 mb-1">Typ Klienta</label>
+                                <select id="clientType" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
+                                    <option value="fyzicka">Fyzická osoba</option>
+                                    <option value="pravnicka">Právnická osoba</option>
+                                    <option value="sverensky">Svěřenský fond</option>
+                                </select>
                             </div>
 
-
-
-                            <!-- Kontrola Card -->
-
-                            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative">
-
-                                <div class="absolute top-0 right-0 bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded-bl">Krok 2</div>
-
-                                <h3 class="font-bold text-slate-800 border-b pb-2 mb-3 flex justify-between items-center">
-
-                                    <span>Kontrola Klienta</span>
-
-                                    <span id="controlStatusBadge" class="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-700">---</span>
-
-                                </h3>
-
-                                <div id="controlContent" class="text-sm text-slate-600">
-
-                                    <!-- JS Populated -->
-
+                            <div class="pt-2 space-y-3">
+                                <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+                                    <input type="checkbox" id="isPEP" class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="text-sm font-medium text-slate-700 block">Politicky exponovaná osoba (PEP)</span>
+                                        <span class="text-xs text-slate-400">Poslanec, soudce, velvyslanec...</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+                                    <input type="checkbox" id="isHighRisk" class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="text-sm font-medium text-slate-700 block">Riziková země / Sankce</span>
+                                        <span class="text-xs text-slate-400">Původ z rizikové 3. země</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+                                    <input type="checkbox" id="isNonFace" class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="text-sm font-medium text-slate-700 block">Identifikace na dálku</span>
+                                        <span class="text-xs text-slate-400">Klient není fyzicky přítomen</span>
+                                    </div>
+                                </label>
+                                <div class="border-t pt-2">
+                                    <label class="flex items-start gap-3 cursor-pointer p-2 bg-red-50 rounded border border-red-100">
+                                        <input type="checkbox" id="isSuspicious" class="mt-1 w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500">
+                                        <div>
+                                            <span class="text-sm font-bold text-red-800 block">Podezření na nekalou činnost</span>
+                                            <span class="text-xs text-red-600">Nejasný původ, nervozita, spěch...</span>
+                                        </div>
+                                    </label>
                                 </div>
-
                             </div>
 
+                            <button onclick="analyzeClient()" class="w-full bg-slate-900 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-800 transition shadow-lg mt-2">
+                                Provést Analýzu
+                            </button>
                         </div>
+                    </div>
+                </div>
 
-
-
-                        <!-- Specific Warnings -->
-
-                        <div id="warningContainer" class="hidden bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-lg text-sm shadow-sm">
-
-                            <h4 class="font-bold mb-1 flex items-center">⚠️ Důležitá upozornění (Metodika 2025)</h4>
-
-                            <div id="warningText" class="space-y-1"></div>
-
-                        </div>
-
+                <!-- OUTPUT DISPLAY -->
+                <div class="lg:col-span-8">
+                    <div id="emptyState" class="h-full flex flex-col items-center justify-center p-12 bg-white rounded-xl border-2 border-dashed border-slate-200 text-slate-400">
+                        <div class="text-5xl mb-4">⚖️</div>
+                        <h3 class="text-lg font-medium text-slate-600">Čekám na data</h3>
+                        <p class="text-sm">Vyplňte parametry vlevo pro vyhodnocení povinností.</p>
                     </div>
 
+                    <div id="analysisResult" class="hidden space-y-6">
+                        <!-- Main Banner -->
+                        <div id="mainAlert" class="p-6 rounded-xl border flex items-start gap-4 shadow-sm bg-white">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <!-- Details Grid -->
+                        <div id="detailsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- IDENTIFICATION -->
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                                <div class="flex justify-between items-center border-b pb-3 mb-3">
+                                    <h4 class="font-bold text-slate-800">1. Identifikace</h4>
+                                    <span id="badgeId" class="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-500">---</span>
+                                </div>
+                                <div id="contentId" class="text-sm text-slate-600 flex-grow"></div>
+                            </div>
+
+                            <!-- CONTROL -->
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                                <div class="flex justify-between items-center border-b pb-3 mb-3">
+                                    <h4 class="font-bold text-slate-800">2. Kontrola</h4>
+                                    <span id="badgeCtrl" class="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-500">---</span>
+                                </div>
+                                <div id="contentCtrl" class="text-sm text-slate-600 flex-grow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Warnings -->
+                        <div id="warningsBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-amber-900 text-sm mb-2 flex items-center gap-2">
+                                ⚠️ Specifická upozornění
+                            </h4>
+                            <ul id="warningsList" class="list-disc list-inside text-sm text-amber-800 space-y-1"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Modelové Situace -->
+        <section id="tab-situace" class="hidden animate-slide">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Modelové Situace z Praxe</h2>
+                    <p class="text-slate-500">Rozklikněte karty pro zobrazení správného postupu.</p>
+                </div>
+
+                <!-- Scenario 1 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden scenario-card">
+                    <div class="p-5 cursor-pointer hover:bg-slate-50 flex justify-between items-center" onclick="toggleScenario('s1')">
+                        <div class="flex gap-4 items-center">
+                            <span class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded text-xs">Podezřelý obchod</span>
+                            <span class="font-semibold text-slate-800">Klient chce koupit firmu, peníze posílá z offshore "půjčky"</span>
+                        </div>
+                        <span class="text-slate-400 text-2xl">⌄</span>
+                    </div>
+                    <div id="s1" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50">
+                        <p class="text-slate-700 text-sm mb-2"><strong>Situace:</strong> Klient kupuje podíl v s.r.o. (sledovaná činnost). Peníze mají přijít z účtu společnosti na BVI, ke které klient nemá dispoziční právo, tvrdí, že jde o půjčku od "známého", kterého nechce jmenovat.</p>
+                        <div class="bg-white p-3 rounded border border-red-200 text-sm">
+                            <strong class="text-red-700">Řešení:</strong> Advokát musí odmítnout transakci. Neprůhledný původ peněz a neochota odhalit UBO věřitele je důvodem k podezření. Nutno podat OPO (Oznámení podezřelého obchodu) ČAK.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 2 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden scenario-card">
+                    <div class="p-5 cursor-pointer hover:bg-slate-50 flex justify-between items-center" onclick="toggleScenario('s2')">
+                        <div class="flex gap-4 items-center">
+                            <span class="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs">Výjimka</span>
+                            <span class="font-semibold text-slate-800">Rozvodové řízení a zatajené miliony</span>
+                        </div>
+                        <span class="text-slate-400 text-2xl">⌄</span>
+                    </div>
+                    <div id="s2" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50">
+                        <p class="text-slate-700 text-sm mb-2"><strong>Situace:</strong> Při zastupování v rozvodu klient přizná, že má ulitých 5 milionů v hotovosti, které nechce přiznat manželce. Ptá se, jak je "právně ošetřit".</p>
+                        <div class="bg-white p-3 rounded border border-green-200 text-sm">
+                            <strong class="text-green-700">Řešení:</strong> Jde o právní poradenství ve sporu (nesledovaná činnost). Advokát má povinnost mlčenlivosti. Nesmí podat OPO. Nicméně nesmí klientovi pomáhat peníze prát (např. je vzít do úschovy) – to by již byl trestný čin nadržování/legalizace. Musí poradenství omezit na zákonné meze.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 3 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden scenario-card">
+                    <div class="p-5 cursor-pointer hover:bg-slate-50 flex justify-between items-center" onclick="toggleScenario('s3')">
+                        <div class="flex gap-4 items-center">
+                            <span class="bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded text-xs">PEP / EDD</span>
+                            <span class="font-semibold text-slate-800">Starosta obce prodává soukromou chatu</span>
+                        </div>
+                        <span class="text-slate-400 text-2xl">⌄</span>
+                    </div>
+                    <div id="s3" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50">
+                        <p class="text-slate-700 text-sm mb-2"><strong>Situace:</strong> Advokát připravuje smlouvu o převodu nemovitosti. Prodávající je starosta (PEP). Cena je obvyklá.</p>
+                        <div class="bg-white p-3 rounded border border-orange-200 text-sm">
+                            <strong class="text-orange-700">Řešení:</strong> Sledovaná činnost + PEP = Zesílená kontrola (EDD). Transakce je pravděpodobně v pořádku, ale advokát <strong>musí</strong> formálně prověřit původ majetku (chaty) a získat souhlas vedení AK k obchodu. Nestačí běžná identifikace.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 4 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden scenario-card">
+                    <div class="p-5 cursor-pointer hover:bg-slate-50 flex justify-between items-center" onclick="toggleScenario('s4')">
+                        <div class="flex gap-4 items-center">
+                            <span class="bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded text-xs">Krypto</span>
+                            <span class="font-semibold text-slate-800">Start-up vkládá základní kapitál v Bitcoinu</span>
+                        </div>
+                        <span class="text-slate-400 text-2xl">⌄</span>
+                    </div>
+                    <div id="s4" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50">
+                        <p class="text-slate-700 text-sm mb-2"><strong>Situace:</strong> Zakládáte s.r.o. (sledovaná činnost). Klient chce splatit vklad převodem kryptoměny, kterou "vytěžil v roce 2015".</p>
+                        <div class="bg-white p-3 rounded border border-blue-200 text-sm">
+                            <strong class="text-blue-700">Řešení:</strong> Vysoké riziko. Virtuální aktiva jsou rizikový faktor. Nutná kontrola zdroje (blockchain analýza nebo čestné prohlášení s důkazy o těžbě). Pokud klient nedoloží původ, nelze provést.
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Scenario 5 -->
+                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden scenario-card">
+                    <div class="p-5 cursor-pointer hover:bg-slate-50 flex justify-between items-center" onclick="toggleScenario('s5')">
+                        <div class="flex gap-4 items-center">
+                            <span class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded text-xs">Zakázáno</span>
+                            <span class="font-semibold text-slate-800">Úschova "na horší časy"</span>
+                        </div>
+                        <span class="text-slate-400 text-2xl">⌄</span>
+                    </div>
+                    <div id="s5" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50">
+                        <p class="text-slate-700 text-sm mb-2"><strong>Situace:</strong> Klient chce dát do advokátní úschovy 2 mil. Kč. Není to vázáno na žádný převod nemovitosti ani soudní spor. Chce to jen "schovat".</p>
+                        <div class="bg-white p-3 rounded border border-red-200 text-sm">
+                            <strong class="text-red-700">Řešení:</strong> Odmítnout. Čl. 56 Etického kodexu/Usnesení o úschovách zakazuje úschovu, která nesouvisí s poskytováním jiné právní služby. Navíc jde o typický znak praní peněz (layering).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 6 -->
+                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden scenario-card">
+                    <div class="p-5 cursor-pointer hover:bg-slate-50 flex justify-between items-center" onclick="toggleScenario('s6')">
+                        <div class="flex gap-4 items-center">
+                            <span class="bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded text-xs">Podlimit</span>
+                            <span class="font-semibold text-slate-800">Sepis kupní smlouvy na auto (500 000 Kč)</span>
+                        </div>
+                        <span class="text-slate-400 text-2xl">⌄</span>
+                    </div>
+                    <div id="s6" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50">
+                        <p class="text-slate-700 text-sm mb-2"><strong>Situace:</strong> Klient chce pouze sepsat smlouvu na prodej auta. Peníze si předají sami mimo advokáta.</p>
+                        <div class="bg-white p-3 rounded border border-gray-300 text-sm">
+                            <strong class="text-gray-700">Řešení:</strong> Není to sledovaná činnost. Sepis smlouvy o převodu movité věci (auta) nespadá pod AML zákon (pokud advokát neprovádí úschovu peněz). Žádná identifikace AML není třeba (pouze běžná identifikace klienta pro smlouvu).
+                        </div>
+                    </div>
                 </div>
 
             </div>
-
         </section>
-
-
-
-        <!-- TAB 4: Rizikové Faktory -->
-
-        <section id="tab-rizika" class="hidden space-y-8 animate-fade-in" tabindex="-1">
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-
-                <h2 class="text-2xl font-bold text-slate-800 mb-4">Hodnocení rizik a nové hrozby</h2>
-
-                <p class="text-slate-600 mb-6">
-
-                    Kromě klasických rizik (hotovost, netransparentní vlastnictví) klade metodika 2025 důraz na mezinárodní sankce a virtuální aktiva.
-
-                </p>
-
-
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                    <div class="p-4 border rounded-lg bg-red-50 border-red-100">
-
-                        <h3 class="font-bold text-red-800 mb-2">🚫 Mezinárodní Sankce</h3>
-
-                        <p class="text-sm text-slate-700 mb-2">Povinnost kontrolovat sankční seznamy (EU, OSN, národní) u každého klienta u sledované činnosti.</p>
-
-                        <p class="text-xs text-slate-500">Pozor na tzv. "obcházení sankcí" přes složité struktury.</p>
-
-                    </div>
-
-
-
-                    <div class="p-4 border rounded-lg bg-orange-50 border-orange-100">
-
-                        <h3 class="font-bold text-orange-800 mb-2">₿ Virtuální Aktiva (Krypto)</h3>
-
-                        <p class="text-sm text-slate-700 mb-2">Pokud je zdrojem majetku kryptoměna, jedná se automaticky o <strong>vyšší riziko</strong>.</p>
-
-                        <p class="text-xs text-slate-500">Nutné vyžadovat doložení historie transakcí (blockchain analýza).</p>
-
-                    </div>
-
-
-
-                    <div class="p-4 border rounded-lg bg-blue-50 border-blue-100">
-
-                        <h3 class="font-bold text-blue-800 mb-2">🏢 Složité struktury</h3>
-
-                        <p class="text-sm text-slate-700 mb-2">Klient využívá "Shell companies" nebo trusty v jurisdikcích, které nespolupracují s EU.</p>
-
-                        <p class="text-xs text-slate-500">Pokud nelze rozklíčovat UBO, obchod se musí odmítnout.</p>
-
-                    </div>
-
-
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- TAB 5: Modelové Situace -->
-
-        <section id="tab-situace" class="hidden space-y-8 animate-fade-in" tabindex="-1">
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-
-                <h2 class="text-2xl font-bold text-slate-800 mb-6">Modelové situace</h2>
-
-
-
-                <div class="space-y-4">
-
-                    <!-- Scenario 1 -->
-
-                    <div class="border border-slate-200 rounded-lg overflow-hidden">
-
-                        <div class="bg-slate-50 p-4 font-semibold text-slate-800 flex justify-between items-center scenario-toggle scenario-header" data-target="scen1" role="button" tabindex="0" aria-expanded="false">
-
-                            <span>1. Klient se svěří, že peníze na nákup nemovitosti pochází z daňového úniku.</span>
-
-                            <span class="text-blue-600 text-sm">Řešení</span>
-
-                        </div>
-
-                        <div id="scen1" class="hidden p-4 bg-white border-t border-slate-200" aria-hidden="true">
-
-                            <p class="mb-2 text-slate-700">
-
-                                <strong class="text-red-600">POVINNOST OZNÁMIT (OPO)</strong>
-
-                            </p>
-
-                            <p class="text-sm text-slate-600">
-
-                                Jde o nákup nemovitosti (Sledovaná činnost). Informace o původu peněz z trestné činnosti (daňový únik) zakládá podezření. Advokát musí podat Oznámení podezřelého obchodu (OPO) České advokátní komoře. Mlčenlivost je prolomena § 21 AML zákona u sledovaných činností.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Scenario 2 -->
-
-                    <div class="border border-slate-200 rounded-lg overflow-hidden">
-
-                        <div class="bg-slate-50 p-4 font-semibold text-slate-800 flex justify-between items-center scenario-toggle scenario-header" data-target="scen2" role="button" tabindex="0" aria-expanded="false">
-
-                            <span>2. Obhájce zjistí, že klient platí za obhajobu z výnosů trestné činnosti.</span>
-
-                            <span class="text-blue-600 text-sm">Řešení</span>
-
-                        </div>
-
-                        <div id="scen2" class="hidden p-4 bg-white border-t border-slate-200" aria-hidden="true">
-
-                            <p class="mb-2 text-slate-700">
-
-                                <strong class="text-green-600">MLČENLIVOST (Žádné hlášení)</strong>
-
-                            </p>
-
-                            <p class="text-sm text-slate-600">
-
-                                I když advokát ví o původu peněz, jde o odměnu za <strong>obhajobu</strong>. Obhajoba není sledovanou činností. Uplatní se absolutní povinnost mlčenlivosti. Advokát peníze přijme (pokud nejde o hotovost nad limit), OPO nepodává.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
 
     </main>
 
-
-
     <!-- Footer -->
-
-    <footer class="bg-slate-900 text-slate-400 py-8 mt-auto" role="contentinfo">
-
-        <div class="container mx-auto px-4 text-center text-xs">
-
-            <p class="mb-2">Vytvořeno v souladu s Metodikou ČAK pro plnění povinností dle zákona č. 253/2008 Sb. (verze 01/2025).</p>
-
-            <p class="opacity-70">Aplikace nenahrazuje právní posouzení konkrétního případu.</p>
-
-        </div>
-
+    <footer class="bg-slate-100 py-6 text-center text-slate-400 text-xs border-t border-slate-200">
+        <p>© 2025 Advokátní Vzdělávací Modul | Vygenerováno pro potřeby školení AML</p>
+        <p class="mt-1">Aplikace nenahrazuje znění zákona č. 253/2008 Sb.</p>
     </footer>
 
-
-
-    <!-- JAVASCRIPT LOGIC -->
-
+    <!-- Logic -->
     <script>
-
-        // Utility: safe number formatter for EUR (Czech locale)
-
-        function formatEUR(value) {
-
-            try {
-
-                return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(value);
-
-            } catch (e) {
-
-                return value + ' EUR';
-
-            }
-
-        }
-
-
-
-        // --- 1. Navigation Logic with ARIA updates ---
-
+        // Navigation
         function switchTab(tabId) {
-
-            document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
-
+            document.querySelectorAll('main > section').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('animate-slide');
+            });
             const target = document.getElementById(tabId);
-
-            if (!target) return;
-
             target.classList.remove('hidden');
+            void target.offsetWidth; // trigger reflow for animation
+            target.classList.add('animate-slide');
 
-            target.focus({ preventScroll: true });
-
-
-
-            // Update tab buttons state and ARIA
-
-            document.querySelectorAll('nav [role="tab"]').forEach(btn => {
-
-                const controls = btn.getAttribute('aria-controls');
-
-                const isActive = controls === tabId;
-
-                btn.classList.toggle('tab-active', isActive);
-
-                btn.classList.toggle('tab-inactive', !isActive);
-
-                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
             });
+            document.getElementById('btn-' + tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.remove('inactive');
 
-
-
-            // Resize chart if visible and instance exists
-
-            if (tabId === 'tab-limity' && window.limitsChartInstance && typeof window.limitsChartInstance.resize === 'function') {
-
-                window.limitsChartInstance.resize();
-
+            if (tabId === 'tab-limity' && window.myChart) {
+                window.myChart.resize();
             }
-
         }
 
-
-
-        // --- 2. Chart.js (Financial Limits) SAFE initialization ---
-
-        function initLimitsChart() {
-
-            const canvas = document.getElementById('limitsChart');
-
-            if (!canvas) return;
-
-            const ctx = canvas.getContext && canvas.getContext('2d');
-
-            if (!ctx) return;
-
-
-
-            // Create only once
-
-            if (window.limitsChartInstance) {
-
-                try { window.limitsChartInstance.update(); } catch(e) {}
-
-                return;
-
-            }
-
-
-
-            window.limitsChartInstance = new Chart(ctx, {
-
-                type: 'bar',
-
-                data: {
-
-                    labels: ['Příležitostný obchod (ID)', 'Advokátní Úschova (ID)', 'Povinná Kontrola', 'Limit Hotovosti'],
-
-                    datasets: [{
-
-                        label: 'Limit v EUR (orientační)',
-
-                        data: [1000, 0, 15000, 10800],
-
-                        backgroundColor: [
-
-                            'rgba(59, 130, 246, 0.6)',
-
-                            'rgba(220, 38, 38, 0.7)',
-
-                            'rgba(79, 70, 229, 0.6)',
-
-                            'rgba(245, 158, 11, 0.6)'
-
-                        ],
-
-                        borderColor: [
-
-                            'rgb(59, 130, 246)',
-
-                            'rgb(220, 38, 38)',
-
-                            'rgb(79, 70, 229)',
-
-                            'rgb(245, 158, 11)'
-
-                        ],
-
-                        borderWidth: 1
-
-                    }]
-
-                },
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio: false,
-
-                    scales: {
-
-                        y: {
-
-                            beginAtZero: true,
-
-                            title: { display: true, text: 'Částka (EUR)' }
-
-                        }
-
-                    },
-
-                    plugins: {
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label: function(context) {
-
-                                    const y = context.parsed?.y ?? context.parsed ?? 0;
-
-                                    if (String(context.label || '').includes('Úschova')) return "Vždy (0 EUR limit)";
-
-                                    return formatEUR(y);
-
-                                }
-
-                            }
-
-                        },
-
-                        legend: { display: false }
-
-                    }
-
-                }
-
-            });
-
-        }
-
-
-
-        // Initialize chart when DOM is ready and Chart.js loaded
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Try to initialize chart safely; Chart.js is deferred so it should be available now
-
-            if (typeof Chart !== 'undefined') {
-
-                initLimitsChart();
-
-            } else {
-
-                // If Chart not available yet, retry shortly
-
-                const tries = 5;
-
-                let attempt = 0;
-
-                const t = setInterval(() => {
-
-                    attempt++;
-
-                    if (typeof Chart !== 'undefined') {
-
-                        initLimitsChart();
-
-                        clearInterval(t);
-
-                    } else if (attempt >= tries) {
-
-                        clearInterval(t);
-
-                    }
-
-                }, 200);
-
-            }
-
-
-
-            // Scenario toggle: add keyboard handlers for accessibility
-
-            document.querySelectorAll('.scenario-header').forEach(header => {
-
-                header.addEventListener('keydown', (ev) => {
-
-                    if (ev.key === 'Enter' || ev.key === ' ') {
-
-                        ev.preventDefault();
-
-                        const target = header.getAttribute('data-target');
-
-                        toggleScenario(target);
-
-                    }
-
-                });
-
-            });
-
-
-
-            // Also ensure clickable scenario headers have proper click listeners
-
-            document.querySelectorAll('.scenario-header').forEach(header => {
-
-                header.addEventListener('click', () => {
-
-                    const target = header.getAttribute('data-target');
-
-                    toggleScenario(target);
-
-                });
-
-            });
-
-
-
-            // Basic inline validation for tradeValue input on blur
-
-            const tradeInput = document.getElementById('tradeValue');
-
-            if (tradeInput) {
-
-                tradeInput.addEventListener('blur', () => {
-
-                    validateTradeValue();
-
-                });
-
-            }
-
-        });
-
-
-
-        // --- 3. Scenario Toggle (with ARIA) ---
-
+        // Scenario Toggle
         function toggleScenario(id) {
-
             const el = document.getElementById(id);
-
-            const header = document.querySelector(`[data-target="${id}"]`);
-
-            if (!el || !header) return;
-
-            const isHidden = el.classList.contains('hidden');
-
-            el.classList.toggle('hidden', !isHidden);
-
-            el.setAttribute('aria-hidden', String(!isHidden));
-
-            header.setAttribute('aria-expanded', String(isHidden));
-
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
         }
 
-
-
-        // --- 4. FORM: Basic validation & UX helpers ---
-
-        function validateTradeValue() {
-
-            const input = document.getElementById('tradeValue');
-
-            const errorEl = document.getElementById('tradeValueError');
-
-            if (!input || !errorEl) return true;
-
-            const v = parseFloat(input.value);
-
-            if (isNaN(v)) {
-
-                errorEl.style.display = 'none';
-
-                errorEl.textContent = '';
-
-                return true; // empty allowed; logic will treat as 0
-
+        // UX: Toggle Form State based on Service Type
+        function toggleFormState() {
+            const service = document.getElementById('serviceType').value;
+            const clientSection = document.getElementById('clientFormSection');
+            const exemptServices = ['obhajoba', 'poradenstvi'];
+            
+            if (exemptServices.includes(service)) {
+                clientSection.classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                clientSection.classList.remove('opacity-50', 'pointer-events-none');
             }
-
-            if (v < 0) {
-
-                errorEl.style.display = '';
-
-                errorEl.textContent = 'Nelze zadat zápornou hodnotu.';
-
-                return false;
-
-            }
-
-            // optional: enforce a practical maximum (e.g., 1e9 EUR)
-
-            if (v > 1e9) {
-
-                errorEl.style.display = '';
-
-                errorEl.textContent = 'Zadaná hodnota se zdá příliš vysoká; ověřte prosím.';
-
-                return false;
-
-            }
-
-            errorEl.style.display = 'none';
-
-            errorEl.textContent = '';
-
-            return true;
-
         }
 
-
-
-        // --- 5. CORE LOGIC: AML Wizard 2025 (improved & safer) ---
-
-        function calculateObligations() {
-
-            // Validate input first
-
-            if (!validateTradeValue()) {
-
-                document.getElementById('tradeValue').focus();
-
-                return;
-
-            }
-
-
-
+        // ANALYSIS LOGIC
+        function analyzeClient() {
             // Inputs
-
-            const serviceType = (document.getElementById('serviceType') || {}).value || '';
-
+            const service = document.getElementById('serviceType').value;
             const value = parseFloat(document.getElementById('tradeValue').value) || 0;
+            const isPEP = document.getElementById('isPEP').checked;
+            const isHighRisk = document.getElementById('isHighRisk').checked;
+            const isNonFace = document.getElementById('isNonFace').checked;
+            const isSuspicious = document.getElementById('isSuspicious').checked;
 
-            const clientType = (document.getElementById('clientType') || {}).value || 'fyzicka';
+            // Elements
+            const emptyState = document.getElementById('emptyState');
+            const resultBox = document.getElementById('analysisResult');
+            const alertBox = document.getElementById('mainAlert');
+            
+            const badgeId = document.getElementById('badgeId');
+            const contentId = document.getElementById('contentId');
+            const badgeCtrl = document.getElementById('badgeCtrl');
+            const contentCtrl = document.getElementById('contentCtrl');
+            const warningsBox = document.getElementById('warningsBox');
+            const warningsList = document.getElementById('warningsList');
 
-            const isPEP = !!document.getElementById('isPEP')?.checked;
-
-            const isHighRiskCountry = !!document.getElementById('isHighRiskCountry')?.checked;
-
-            const isNonFaceToFace = !!document.getElementById('isNonFaceToFace')?.checked;
-
-            const isSuspicious = !!document.getElementById('isSuspicious')?.checked;
-
-
-
-            // UI Elements
-
-            const resultPanel = document.getElementById('resultPanel');
-
-            const resultPlaceholder = document.getElementById('resultPlaceholder');
-
-            const exemptInfo = document.getElementById('exemptInfo');
-
-            const obligationsGrid = document.getElementById('obligationsGrid');
-
-            const banner = document.getElementById('statusBanner');
-
-            const idBadge = document.getElementById('idStatusBadge');
-
-            const idSteps = document.getElementById('idSteps');
-
-            const ctrlBadge = document.getElementById('controlStatusBadge');
-
-            const ctrlContent = document.getElementById('controlContent');
-
-            const warnCont = document.getElementById('warningContainer');
-
-            const warningText = document.getElementById('warningText');
-
-
-
-            resultPlaceholder.classList.add('hidden');
-
-            resultPanel.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            resultBox.classList.remove('hidden');
 
             let warnings = [];
+            let mainStatus = "";
+            let mainColorClass = "";
 
+            // 1. Check Service Exemption
+            const isExempt = ['obhajoba', 'poradenstvi'].includes(service);
+            
+            if (isExempt && !isSuspicious) {
+                alertBox.className = "p-6 rounded-xl border flex items-start gap-4 shadow-sm bg-green-50 border-green-200";
+                alertBox.innerHTML = `
+                    <div class="text-3xl">🛡️</div>
+                    <div>
+                        <h3 class="font-bold text-green-900 text-lg">Výjimka z AML</h3>
+                        <p class="text-green-800 text-sm mt-1">U této služby se neuplatňují postupy AML zákona. Platí absolutní povinnost mlčenlivosti.</p>
+                    </div>`;
+                
+                badgeId.textContent = "NEPROVÁDÍ SE";
+                badgeId.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-700";
+                contentId.innerHTML = "Pouze běžná identifikace klienta pro potřeby smlouvy/spisu.";
 
-
-            // --- STEP A: Determine if AML applies (Service Type) ---
-
-            const isMonitoredActivity = ['uschova', 'nemovitost', 'korporace', 'majatek'].includes(serviceType);
-
-            const isCustody = serviceType === 'uschova';
-
-
-
-            // If non-monitored AND not suspicious -> exempt
-
-            if (!isMonitoredActivity && !isSuspicious) {
-
-                banner.className = "p-4 rounded-lg border-l-8 shadow-sm flex items-center bg-green-100 border-green-500 text-green-900";
-
-                banner.innerHTML = `<span class="text-2xl mr-3">🛡️</span> <div><h3 class="font-bold text-lg">Výjimka (Nesledovaná činnost)</h3><p class="mt-1 text-sm">U této činnosti se AML běžně neuplatní (mlčenlivost zůstává).</p></div>`;
-
-                exemptInfo.classList.remove('hidden');
-
-                obligationsGrid.classList.add('hidden');
-
-                warnCont.classList.add('hidden');
-
+                badgeCtrl.textContent = "NEPROVÁDÍ SE";
+                badgeCtrl.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-700";
+                contentCtrl.innerHTML = "Nezjišťuje se původ majetku.";
+                
+                warningsBox.classList.add('hidden');
                 return;
-
             }
 
+            // 2. Logic for Monitored Activities
+            let requiresId = false;
+            let requiresCtrl = false;
+            let ctrlLevel = "Standard"; // Standard vs Enhanced
 
-
-            // If we are here, it IS a Monitored Activity OR it's Suspicious
-
-            exemptInfo.classList.add('hidden');
-
-            obligationsGrid.classList.remove('hidden');
-
-
-
-            let controlRequired = false;
-
-            let controlType = "Standardní";
-
-            let statusColor = "bg-blue-50 border-blue-500 text-blue-900";
-
-            let statusText = "Standardní postup";
-
-
-
-            // --- STEP B: Identification Logic ---
-
-            let identificationRequired = false;
-
-
-
-            if (isCustody) {
-
-                identificationRequired = true;
-
-                warnings.push("Advokátní úschova vyžaduje identifikaci VŽDY (bez ohledu na limit).");
-
-            } else if (value >= 1000) {
-
-                identificationRequired = true;
-
-            } else if (isSuspicious) {
-
-                identificationRequired = true;
-
-                warnings.push("Podezřelý obchod vyžaduje identifikaci vždy.");
-
+            // ID Logic
+            if (service === 'uschova') {
+                requiresId = true;
+                warnings.push("U úschovy je identifikace povinná vždy (bez limitu).");
+            } else if (value >= 1000 || isSuspicious) {
+                requiresId = true;
             }
 
-
-
-            if (identificationRequired) {
-
-                idBadge.textContent = "NUTNÁ";
-
-                idBadge.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-bold";
-
-                let steps = `<li>Zaznamenat identifikační údaje (dle § 5).</li>`;
-
-                if (isNonFaceToFace) steps += `<li class="text-blue-700 font-semibold">Postup na dálku (§ 11) - ověřte přijatelné dálkové ověření nebo autentizační metody.</li>`;
-
-                steps += `<li>Ověření, zda klient není na sankčním seznamu (EU/OSN/národní).</li>`;
-
-                idSteps.innerHTML = steps;
-
-            } else {
-
-                idBadge.textContent = "Není nutná";
-
-                idBadge.className = "text-xs px-2 py-1 rounded-full bg-green-100 text-green-700";
-
-                idSteps.innerHTML = "<li>Podlimitní obchod mimo úschovu - identifikace není standardně požadována.</li>";
-
+            // Control Logic
+            if (value >= 15000 || service === 'uschova' || isSuspicious || isPEP || isHighRisk) {
+                requiresCtrl = true;
             }
 
-
-
-            // --- STEP C: Control Logic ---
-
-            // Trigger thresholds
-
-            if (value >= 15000 || isCustody || isSuspicious || isPEP || isHighRiskCountry || clientType === 'sverensky') {
-
-                controlRequired = true;
-
+            // Enhanced Due Diligence (EDD) Triggers
+            if (isPEP || isHighRisk || isSuspicious || (isNonFace && !requiresId)) {
+                ctrlLevel = "Enhanced";
             }
-
-
-
-            // Determine Level of Control
-
-            if (isPEP || isHighRiskCountry || isSuspicious || (isNonFaceToFace && !identificationRequired)) {
-
-                controlType = "Zesílená (EDD)";
-
-                statusColor = "bg-red-100 border-red-500 text-red-900";
-
-                statusText = "VYSOKÉ RIZIKO - Zesílená kontrola";
-
-
-
-                if (isPEP) warnings.push("PEP: Nutný souhlas statutárního orgánu/partnera kanceláře k obchodu a dokumentace dodatečných opatření.");
-
-                if (isHighRiskCountry) warnings.push("Země původu klasifikovaná jako vysoké riziko: zvýšený monitoring a doložení původu prostředků.");
-
-            } else if (controlRequired) {
-
-                statusColor = "bg-yellow-100 border-yellow-500 text-yellow-900";
-
-                statusText = "STŘEDNÍ RIZIKO - Povinná kontrola";
-
-            } else {
-
-                statusText = "NÍZKÉ RIZIKO - Bez kontroly";
-
-            }
-
-
 
             // Suspicious Override
-
             if (isSuspicious) {
-
-                statusColor = "bg-red-200 border-red-700 text-red-900";
-
-                statusText = "🛑 PODEZŘENÍ NA OPO";
-
-                warnings.push("Zvažte podání OPO Komoře. Nevarujte klienta (tipping-off)!");
-
+                mainColorClass = "bg-red-50 border-red-200";
+                mainStatus = `
+                    <div class="text-3xl">🚨</div>
+                    <div>
+                        <h3 class="font-bold text-red-900 text-lg">PODEZŘELÝ OBCHOD</h3>
+                        <p class="text-red-800 text-sm mt-1">Detekováno vysoké riziko. Zvažte povinnost podat OPO a obchod neuskutečnit.</p>
+                    </div>`;
+                warnings.push("Zákaz 'tipping-off' (nevarovat klienta).");
+            } else if (ctrlLevel === "Enhanced" && requiresCtrl) {
+                mainColorClass = "bg-orange-50 border-orange-200";
+                mainStatus = `
+                    <div class="text-3xl">⚠️</div>
+                    <div>
+                        <h3 class="font-bold text-orange-900 text-lg">Vysoké Riziko (EDD)</h3>
+                        <p class="text-orange-800 text-sm mt-1">Nutná zesílená kontrola klienta a schválení obchodu.</p>
+                    </div>`;
+            } else if (requiresCtrl) {
+                mainColorClass = "bg-blue-50 border-blue-200";
+                mainStatus = `
+                    <div class="text-3xl">ℹ️</div>
+                    <div>
+                        <h3 class="font-bold text-blue-900 text-lg">Standardní Povinnosti</h3>
+                        <p class="text-blue-800 text-sm mt-1">Obchod podléhá standardní identifikaci a kontrole.</p>
+                    </div>`;
+            } else if (requiresId) {
+                mainColorClass = "bg-blue-50 border-blue-200";
+                mainStatus = `
+                    <div class="text-3xl">🆔</div>
+                    <div>
+                        <h3 class="font-bold text-blue-900 text-lg">Pouze Identifikace</h3>
+                        <p class="text-blue-800 text-sm mt-1">Obchod přesahuje 1000 EUR, nutná identifikace.</p>
+                    </div>`;
+            } else {
+                mainColorClass = "bg-slate-50 border-slate-200";
+                mainStatus = `
+                    <div class="text-3xl">✅</div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg">Podlimitní obchod</h3>
+                        <p class="text-slate-700 text-sm mt-1">Sledovaná činnost pod limitem 1000 EUR.</p>
+                    </div>`;
             }
 
+            alertBox.className = `p-6 rounded-xl border flex items-start gap-4 shadow-sm ${mainColorClass}`;
+            alertBox.innerHTML = mainStatus;
 
+            // Render ID Details
+            if (requiresId) {
+                badgeId.textContent = "NUTNÁ";
+                badgeId.className = "text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-700";
+                let html = `<ul class="list-disc list-inside space-y-1">
+                    <li>Zaznamenat identifikační údaje (§ 5).</li>
+                    <li>Ověřit shodu podoby (Face-to-face).</li>
+                    <li>Kontrola sankčních seznamů (MAP).</li>`;
+                if (isNonFace) html += `<li class="font-bold text-orange-600">Postup na dálku (§ 11) - První platba z účtu!</li>`;
+                html += `</ul>`;
+                contentId.innerHTML = html;
+            } else {
+                badgeId.textContent = "NENÍ NUTNÁ";
+                badgeId.className = "text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-500";
+                contentId.innerHTML = "Podlimitní transakce (pokud není podezření).";
+            }
 
-            // Render Control
-
-            if (controlRequired) {
-
-                ctrlBadge.textContent = controlType.toUpperCase();
-
-                ctrlBadge.className = controlType.includes('Zesílená') 
-
-                    ? "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-bold"
-
-                    : "text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 font-bold";
-
-
-
-                let ctrlHtml = `<ul class="list-disc list-inside space-y-1 mb-2">`;
-
-                ctrlHtml += `<li>Zjistit skutečného majitele (UBO) a ověřit vlastnickou strukturu.</li>`;
-
-                ctrlHtml += `<li>Ověřit účel a povahu obchodu.</li>`;
-
-                ctrlHtml += `<li>Prověřit zdroje majetku a platební historii.</li>`;
-
-                if (controlType.includes('Zesílená')) {
-
-                    ctrlHtml += `<li class="font-bold text-red-600">Doložení původu majetku dokumenty (bankovní výpisy, smlouvy, blockchain evidence apod.).</li>`;
-
+            // Render Control Details
+            if (requiresCtrl) {
+                badgeCtrl.textContent = ctrlLevel === "Enhanced" ? "ZESÍLENÁ" : "STANDARD";
+                badgeCtrl.className = ctrlLevel === "Enhanced" 
+                    ? "text-xs font-bold px-2 py-1 rounded bg-orange-100 text-orange-700" 
+                    : "text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-700";
+                
+                let html = `<ul class="list-disc list-inside space-y-1">
+                    <li>Zjištění Skutečného majitele (UBO).</li>
+                    <li>Zjištění účelu obchodu.</li>`;
+                if (ctrlLevel === "Enhanced") {
+                    html += `<li class="font-bold text-red-600">Doložení původu majetku dokumenty.</li>`;
+                    html += `<li class="font-bold text-red-600">Souhlas statutára/partnera kanceláře.</li>`;
+                    if(isPEP) warnings.push("PEP: Nutno zjistit původ veškerého majetku, ne jen peněz v transakci.");
                 }
-
-                ctrlHtml += `</ul>`;
-
-                ctrlContent.innerHTML = ctrlHtml;
-
+                html += `</ul>`;
+                contentCtrl.innerHTML = html;
             } else {
-
-                ctrlBadge.textContent = "Není nutná";
-
-                ctrlBadge.className = "text-xs px-2 py-1 rounded-full bg-green-100 text-green-700";
-
-                ctrlContent.innerHTML = "<p>Pod hranicí pro kontrolu.</p>";
-
+                badgeCtrl.textContent = "NENÍ NUTNÁ";
+                badgeCtrl.className = "text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-500";
+                contentCtrl.innerHTML = "Nesplněn limit 15 000 EUR ani riziková kriteria.";
             }
 
-
-
-            // Final Render
-
-            banner.className = `p-4 rounded-lg border-l-8 shadow-sm flex items-center ${statusColor}`;
-
-            banner.innerHTML = `<span class="text-2xl mr-3">${isSuspicious ? '🛑' : 'ℹ️'}</span> <div><h3 class="font-bold text-lg">${statusText}</h3><p class="mt-1 text-sm text-slate-700">Hodnocení na základě zadaných parametrů. Hodnota: ${formatEUR(value)}</p></div>`;
-
-
-
+            // Render Warnings
             if (warnings.length > 0) {
-
-                warnCont.classList.remove('hidden');
-
-                // Deduplicate warnings
-
-                const unique = Array.from(new Set(warnings));
-
-                warningText.innerHTML = unique.map(w => `<p>• ${w}</p>`).join('');
-
+                warningsBox.classList.remove('hidden');
+                warningsList.innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
             } else {
-
-                warnCont.classList.add('hidden');
-
-                warningText.innerHTML = '';
-
+                warningsBox.classList.add('hidden');
             }
-
         }
 
+        // Initialize Chart
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('limitsChart').getContext('2d');
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Úschova', 'Příležitostný', 'Kontrola', 'Hotovost'],
+                    datasets: [{
+                        label: 'Limit (EUR)',
+                        data: [0.1, 1000, 15000, 10800], // 0.1 visuals for "Always"
+                        backgroundColor: ['#ef4444', '#3b82f6', '#4f46e5', '#f97316'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.raw < 1 ? "Vždy (0 EUR)" : `${ctx.raw} EUR`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
     </script>
-
 </body>
-
 </html>
