@@ -5,113 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AML Průvodce pro Advokátní Praxi (Metodika 2025)</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com" defer></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Fallback styles for common Tailwind classes (used if CDN JS fails) */
-        .min-h-screen { min-height: 100vh; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-center { justify-content: center; }
-        .p-8 { padding: 2rem; }
-        .max-w-3xl { max-width: 48rem; }
-        .w-full { width: 100%; }
-        .bg-white { background-color: #ffffff; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .shadow { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
-        .font-bold { font-weight: 700; }
-        .mb-4 { margin-bottom: 1rem; }
-        .max-w-3xl.w-full.bg-white.rounded-lg.shadow.p-8 { box-sizing: border-box; }
-
-        body {
-            font-family: 'Noto Sans', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        /* Chart Container Styling - MANDATORY */
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            height: 350px;
-            max-height: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        @media (max-width: 640px) {
-            .chart-container {
-                height: 250px;
-            }
-        }
-
-        /* Card Hover Effects */
-        .hover-card {
-            transition: all 0.3s ease;
-        }
-        .hover-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Custom Active Tab State */
-        .tab-active {
-            border-bottom: 3px solid #1e3a8a; /* Blue-900 */
-            color: #1e3a8a;
-            font-weight: 700;
-        }
-        .tab-inactive {
-            color: #6b7280;
-            font-weight: 500;
-        }
-        .tab-inactive:hover {
-            color: #374151;
-        }
+        body { font-family: sans-serif; background-color: #f3f4f6; color: #1f2937; margin: 0; }
+        .hidden { display: none !important; } /* Kritické pro funkčnost záložek */
+        
+        /* Chart Container */
+        .chart-container { position: relative; width: 100%; max-width: 800px; height: 350px; margin: 0 auto; }
+        
+        /* Focus styles */
+        :focus { outline: 3px solid rgba(59,130,246,0.5); }
 
         /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-
-        /* Focus-visible for keyboard users */
-        :focus {
-            outline: 3px solid rgba(59,130,246,0.25);
-            outline-offset: 2px;
-
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body>
-    <main class="min-h-screen flex items-center justify-center p-8">
-        <div class="max-w-3xl w-full bg-white rounded-lg shadow p-8">
-            <h1 class="text-2xl font-bold mb-4">AML Průvodce pro Advokátní Praxi (Metodika 2025)</h1>
-            <p>Obsah stránky zde. Pokud používáte externí CSS soubor, zkontrolujte cestu.</p>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <header class="bg-slate-900 text-white shadow-lg" style="background-color: #0f172a; color: white; padding: 1.5rem;">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-tight" style="font-size: 1.5rem; font-weight: bold;">⚖️ AML Školení pro Advokáty</h1>
+                    <p class="text-slate-300 text-sm mt-1" style="color: #cbd5e1;">Interaktivní průvodce dle metodiky ČAK 2025</p>
+                </div>
+            </div>
         </div>
-    </main>
-</body>
-</html>
+    </header>
+
+    <nav class="bg-white shadow sticky top-0 z-50" style="background: white; border-bottom: 1px solid #e5e7eb; padding: 0.5rem 0;">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-4 overflow-x-auto" id="nav-container" style="display: flex; gap: 10px;">
+                <button onclick="switchTab('tab-prehled')" id="btn-tab-prehled" class="tab-active py-2 px-4 font-bold text-blue-900 border-b-2 border-blue-900">Sledované Činnosti</button>
+                <button onclick="switchTab('tab-limity')" id="btn-tab-limity" class="tab-inactive py-2 px-4 text-gray-600 hover:text-gray-900">Finanční Limity</button>
+                <button onclick="switchTab('tab-wizard')" id="btn-tab-wizard" class="tab-inactive py-2 px-4 text-gray-600 hover:text-gray-900">⚡ Wizard</button>
+                <button onclick="switchTab('tab-rizika')" id="btn-tab-rizika" class="tab-inactive py-2 px-4 text-gray-600 hover:text-gray-900">Rizika</button>
+                <button onclick="switchTab('tab-situace')" id="btn-tab-situace" class="tab-inactive py-2 px-4 text-gray-600 hover:text-gray-900">Situace</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+
+        <section id="tab-prehled" class="animate-fade-in">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Kdy je advokát povinnou osobou?</h2>
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-600 rounded mb-6" style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 15px;">
+                    <p class="text-blue-900"><strong>Klíčový princip:</strong> Povinnosti dopadají pouze na <strong>SLEDOVANÉ ČINNOSTI</strong>.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div class="border rounded-xl p-5 bg-white shadow-sm relative overflow-hidden" style="border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px;">
+                        <h3 class="font-bold text-lg mb-3" style="color: #dc2626;">✅ Sledované činnosti (AML platí)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700 text-sm">
+                            <li>Úschova peněz / cenných papírů.</li>
+                            <li>Nákup/prodej nemovitosti či podniku.</li>
+                            <li>Správa majetku a zakládání korporací.</li>
+                        </ul>
+                    </div>
+                    <div class="border rounded-xl p-5 bg-white shadow-sm relative overflow-hidden" style="border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px;">
+                        <h3 class="font-bold text-lg mb-3" style="color: #16a34a;">🛡️ Vyňaté činnosti (Mlčenlivost)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700 text-sm">
+                            <li>Obhajoba v trestním řízení.</li>
+                            <li>Soudní spory.</li>
+                            <li>Právní poradenství o postavení klienta.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-limity" class="hidden animate-fade-in">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style="background: white; padding: 20px; border-radius: 10px;">
+                <h2 class="text-2xl font-bold mb-4">Finanční prahy 2025</h2>
+                <div class="chart-container">
+                    <canvas id="limitsChart"></canvas>
+                </div>
+                <div class="mt-8 text-center" style="margin-top: 20px;">
+                    <p><strong>15 000 EUR</strong> = Povinná kontrola | <strong>270 000 CZK</strong> = Limit hotovosti</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-wizard" class="hidden animate-fade-in">
+            <div class="grid lg:grid-cols-3 gap-8" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style="background: white; padding: 20px; border-radius: 10px;">
+                    <h2 class="text-xl font-bold mb-4">Parametry</h2>
+                    <form onsubmit="event.preventDefault(); calculateObligations();">
+                        <label class="block mb-2 font-bold">Typ Služby</label>
+                        <select id="serviceType" class="w-full p-2 border rounded mb-4" style="width: 100%; padding: 8px; margin-bottom: 15px;">
+                            <option value="uschova">Úschova (Peníze/CP)</option>
+                            <option value="nemovitost">Nemovitost / Obchodní podíl</option>
+                            <option value="korporace">Korporace / Správa majetku</option>
+                            <option value="obhajoba">Obhajoba / Poradenství</option>
+                        </select>
+
+                        <label class="block mb-2 font-bold">Hodnota (EUR)</label>
+                        <input type="number" id="tradeValue" class="w-full p-2 border rounded mb-4" placeholder="0" style="width: 100%; padding: 8px; margin-bottom: 15px;">
+
+                        <div class="space-y-2 mb-4">
+                            <label><input type="checkbox" id="isPEP"> Klient je PEP</label><br>
+                            <label><input type="checkbox" id="isHighRiskCountry"> Riziková země</label><br>
+                            <label><input type="checkbox" id="isSuspicious"> <span style="color:red; font-weight:bold;">Podezření</span></label>
+                        </div>
+
+                        <button class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700" style="width: 100%; background: #2563eb; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Vyhodnotit</button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div id="resultPanel" class="hidden space-y-4">
+                        <div id="statusBanner" class="p-4 rounded-lg border-l-8 shadow-sm" style="padding: 15px; border-radius: 8px; background: #f8fafc;">
+                            </div>
+                        <div id="obligationsGrid" class="bg-white p-5 border rounded-lg mt-4 shadow-sm" style="background: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            <h3 class="font-bold border-b pb-2 mb-2">Povinnosti:</h3>
+                            <ul id="idSteps" class="list-disc list-inside mb-4"></ul>
+                            <div id="controlContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-rizika" class="hidden animate-fade-in">
+             <div class="bg-white p-6 rounded-xl shadow-sm border" style="background: white; padding: 20px; border-radius: 10px;">
+                <h2 class="text-xl font-bold mb-4">Rizikové faktory</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Mezinárodní sankce:</strong> Povinnost kontrolovat sankční seznamy.</li>
+                    <li><strong>Kryptoměny:</strong> Automaticky vyšší riziko, nutná analýza původu.</li>
+                    <li><strong>Složité struktury:</strong> Pokud nelze zjistit majitele, obchod odmítnout.</li>
+                </ul>
+             </div>
+        </section>
+
+        <section id="tab-situace" class="hidden animate-fade-in">
+            <div class="bg-white p-6 rounded-xl shadow-sm border" style="background: white; padding: 20px; border-radius: 10px;">
+                <h2 class="text-xl font-bold mb-4">Modelové situace</h2>
+                <div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
+                    <button onclick="toggleScenario('scen1')" class="w-full text-left p-4 bg-gray-50 font-bold flex justify-between" style="width: 100%; text-align: left; padding: 15px; background: #f9fafb; border: none; cursor: pointer;">
+                        1. Klient přizná daňový únik (nákup nemovitosti) <span>▼</span>
+                    </
